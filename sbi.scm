@@ -106,6 +106,7 @@
 
 ;(main arglist)
 (define (main arglist)
+    ; if the arglist is null or has more than one element
     (if (or (null? arglist) (not (null? (cdr arglist)))) ;check for correct input
         (usage-exit)
         (let* ((sbprogfile (car arglist))
