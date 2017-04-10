@@ -102,7 +102,7 @@
         (if (list? (cadr line)) ;line --> (number (statement))
             '()
             (if (null? (cadr line)) ;line --> (number label)
-                '()
+                (cadr line)
                 (cadr line)) ;line --> (line_num label (statement)) 
             )
         )
@@ -116,7 +116,7 @@
 
 ;Label Table
 (define (build-label-table program) 
-    (populate-table *statement-table* (map (lambda (line) (list (get-label line) (get-address line)) ) program)
+    (populate-table *label-table* (map (lambda (line) (list (get-label line) (get-address line)) ) program)
     ))
 
 ;Function Table
@@ -146,12 +146,13 @@
         (let* ((sbprogfile (car arglist))
                (program (readlist-from-inputfile sbprogfile))) ;puts list of statements into var program
               (build-statement-table program) ;;(build-label-table program)
+              (build-label-table program) ;;(build-label-table program)
               ))); initializes statement symbol table
 
 (main (vector->list (current-command-line-arguments)))
 
 (print-hash-table *statement-table*)
-
+(print-hash-table *label-table*)
 ;
 ;Error Checking Code
 ;
