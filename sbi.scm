@@ -102,9 +102,9 @@
 
 ;Statement Table
 
-;(define (build-statement-table program) 
-;    (populate-table *statement-table* (map (lambda (line) (cons (get-address line) (get-statement line)) program))
-;    ))
+(define (build-statement-table program) 
+    (populate-table *statement-table* (map (lambda (line) (cons (get-address line) (get-statement line)) program))
+    ))
 
 ;(define (build-statement-table program) 
 ;    (for-each (lambda (line) (symbol-put! table (get-address line) (get-statement line))) program)
