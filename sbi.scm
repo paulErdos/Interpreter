@@ -96,30 +96,28 @@
             )
         )
     )
-;(define (get-label line)
-;    (if )
-;    )
+(define (get-label line)
+    (if (null? (cdr line)) ; line --> (number)
+        '()
+        (if (list? (cadr line)) ;line --> (number (statement))
+            '()
+            (if (null? (cadr line)) ;line --> (number label)
+                '()
+                (cadr line)) ;line --> (line_num label (statement)) 
+            )
+        )
+    )
 
 ;Statement Table
 
 (define (build-statement-table program) 
-    (populate-table *statement-table* (map (lambda (line) (cons (get-address line) (get-statement line)) program))
+    (populate-table *statement-table* (map (lambda (line) (list (get-address line) (get-statement line)) ) program)
     ))
 
-;(define (build-statement-table program) 
-;    (for-each (lambda (line) (symbol-put! table (get-address line) (get-statement line))) program)
-;    )
-
-;return pairs (adress, statement)
-;(2) -> (2, '())
-;(2 label) -> (2, '())
-;(2 (statement...)) -> (2, statement)
-;(2 label (statement...)) -> (2, statement)
-;(define (statement-pairs program) 
-;
-;    )
-
 ;Label Table
+(define (build-label-table program) 
+    (populate-table *statement-table* (map (lambda (line) (list (get-label line) (get-address line)) ) program)
+    ))
 
 ;Function Table
 
@@ -147,7 +145,7 @@
         (usage-exit)
         (let* ((sbprogfile (car arglist))
                (program (readlist-from-inputfile sbprogfile))) ;puts list of statements into var program
-              (build-statement-table program);;;;;(build-label-table program)
+              (build-statement-table program) ;;(build-label-table program)
               ))); initializes statement symbol table
 
 (main (vector->list (current-command-line-arguments)))
