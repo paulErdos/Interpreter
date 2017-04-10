@@ -65,6 +65,7 @@
 ; Symbol Table Initialization & Functions
 ;
 
+;TODO: define build-statement-table, build-label-table
 ;Create Tables
 (define *statement-table* (make-hash))
 (define *label-table* (make-hash))
@@ -81,7 +82,42 @@
 (define (populate-table table pairs)
     (for-each (lambda (pair) (symbol-put! table (car pair) (cdr pair))) pairs))
 
+(define (get-address line)
+    (car line)
+    )
+(define (get-statement line)
+    (if (null? (cdr line)) ; line --> (number)
+        '()
+        (if (list? (cadr line)) ;line --> (number (statement))
+            (cadr line)
+            (if (null? (cddr line)) ;line --> (number label)
+                '()
+                (caddr line)) ;line --> (line_num label (statement)) 
+            )
+        )
+    )
+;(define (get-label line)
+;    (if )
+;    )
+
 ;Statement Table
+
+;(define (build-statement-table program) 
+;    (populate-table *statement-table* (map (lambda (line) (cons (get-address line) (get-statement line)) program))
+;    ))
+
+;(define (build-statement-table program) 
+;    (for-each (lambda (line) (symbol-put! table (get-address line) (get-statement line))) program)
+;    )
+
+;return pairs (adress, statement)
+;(2) -> (2, '())
+;(2 label) -> (2, '())
+;(2 (statement...)) -> (2, statement)
+;(2 label (statement...)) -> (2, statement)
+;(define (statement-pairs program) 
+;
+;    )
 
 ;Label Table
 
@@ -111,8 +147,24 @@
         (usage-exit)
         (let* ((sbprogfile (car arglist))
                (program (readlist-from-inputfile sbprogfile))) ;puts list of statements into var program
-              (populate-table *statement-table* program)))); initializes statement symbol table
+              (build-statement-table program);;;;;(build-label-table program)
+              ))); initializes statement symbol table
 
 (main (vector->list (current-command-line-arguments)))
 
 (print-hash-table *statement-table*)
+
+;
+;Error Checking Code
+;
+
+;(display (get-address '(1) )) (display "\n")
+;(display (get-address '(1 "label") )) (display "\n")
+;(display (get-address '(1 ("statement")) )) (display "\n")
+;(display (get-address '(1 "label" ("statement")) )) (display "\n")
+;
+;(display (get-statement '(1) )) (display "\n")
+;(display (get-statement '(1 "label") )) (display "\n")
+;(display (get-statement '(1 ("statement")) )) (display "\n")
+;(display (get-statement '(1 "label" ("statement")) )) (display "\n")
+
