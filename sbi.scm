@@ -9,12 +9,21 @@
 ;;
 ;; DESCRIPTION
 ;;    The file mentioned in argv[1] is read and assumed to be an SBIR
-;;    program, which is the executed.  Currently it is only printed.
+;;    program, which is the executed.
 ;;
 
-;
+;========================================
+; TODO
+;========================================
+
+; - Write functions which interepret individual statements
+; - Write function which will iterate thru statement table
+;   correctly
+; - Error Checking
+
+;========================================
 ; File Retrieval Functions
-;
+;========================================
 (define *stderr* (current-error-port))
 
 (define *run-file*
@@ -61,11 +70,11 @@
     (printf "(~n")
     (map (lambda (line) (printf "~s~n" line)) program)
     (printf ")~n"))
-;
-; Symbol Table Initialization & Functions
-;
 
-;TODO: define build-statement-table, build-label-table
+;========================================
+; Symbol Table Initialization & Functions
+;========================================
+
 ;Create Tables
 (define *statement-table* (make-hash))
 (define *label-table* (make-hash))
@@ -73,7 +82,6 @@
 (define *variable-table* (make-hash))
 
 ;General Functions
-;
 (define (symbol-get table key)
         (hash-ref table key))
 (define (symbol-put! table key value)
@@ -109,7 +117,6 @@
     )
 
 ;Statement Table
-
 (define (build-statement-table program) 
     (populate-table *statement-table* (map (lambda (line) (list (get-address line) (get-statement line)) ) program)
     ))
@@ -134,9 +141,13 @@
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
-;
-; F. Main
-;
+;========================================
+; Interpreting Functions
+;========================================
+
+;========================================
+; Main
+;========================================
 
 ;(main arglist)
 (define (main arglist)
@@ -153,9 +164,11 @@
 
 (print-hash-table *statement-table*)
 (print-hash-table *label-table*)
-;
+
+
+;========================================
 ;Error Checking Code
-;
+;========================================
 
 ;(display (get-address '(1) )) (display "\n")
 ;(display (get-address '(1 "label") )) (display "\n")
