@@ -36,17 +36,6 @@
     (die `("Usage: " ,*run-file* " filename"))
 )
 
-; foldr 
-(define (foldr f u l)
-    (if (null? l) u
-        (f (car l) (foldr f u (cdr l)))))
-
-; filter
-; filters a list based on a predicate
-(define (filter p? l)
-    (define (c a d) (if (p? a) (cons a d) d))
-    (foldr c '() l))
-
 ;(readlist-from-inputfile)
 ;Input : (string filename) name of file to be read
 ;Output: list of strings containing individual 
@@ -57,11 +46,7 @@
              (die `(,*run-file* ": " ,filename ": open failed"))
              (let ((program (read inputfile)))
                   (close-input-port inputfile)
-                         (map display (map (lambda (x) (not (null? (cdr x)))) program))
-                         (map display (filter (lambda (x) (not (null? (cdr x)))) program)) 
-                         (filter (lambda (x) (not (null? (cdr x)))) program)))))
-                         
-;                         program))))
+                         program))))
 
 ;(write-program-by-line filename program)
 ;Input  : (string filename) and (list program) which is 
@@ -156,21 +141,14 @@
 ;	(print-hash-table *statement-table*)
 ;	(print-hash-table *label-table*)
 	(define (interpret line)
-		(cond ( (null? (car line)) '())                     ; at end of list?
-		      ( (null? (cdar line)) (interpret (cdr line))) ; empty line?
-		      ( else 
-				(display (car line))
-				(display " | ")
-				(display (cdar line))
-				(display " | ")
-				(display (cadar line))
-				(display " | ")
-				(display (symbol? (cadar line)))
-				;(display (string=? "dim" (caadar line)))
-				(display " | ")
-				(printf "~n")
-				(cond ( (null? (cdr line)) '()) ; at end of list?
-				      ( else (interpret (cdr line)))) )))
+		(display (car line))
+		(display (cdar line))
+		(display (null? (cdar line)))
+		(cond ((null? (cdar line)) (interpret (cdr line))) 
+		      ( else ()))	
+		(printf "~n")
+		(cond ( (null? (cdr line)) '())
+		      ( else (interpret (cdr line)))))
 	(interpret line_list))
 
 ;
@@ -193,8 +171,8 @@
 
 (main (vector->list (current-command-line-arguments)))
 
-(print-hash-table *statement-table*)
-(print-hash-table *label-table*)
+;(print-hash-table *statement-table*)
+;(print-hash-table *label-table*)
 ;
 ;Error Checking Code
 ;
