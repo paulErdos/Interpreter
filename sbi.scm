@@ -11,11 +11,33 @@
 ;;    The file mentioned in argv[1] is read and assumed to be an SBIR
 ;;    program, which is the executed.  Currently it is only printed.
 ;;
+;; TO-DO
+;;    * define build-statement-table, build-label-table
+;;    * Consider eliminating symbol-get and symbol-put!. This requires
+;;      at least rewriting populate-table in terms of hash-set!.
+;;    * Reorganize functions
+;;    * Describe and comment everything I've written
+;;    * Put my name in this
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;
-; File Retrieval Functions
-;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Variables
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Tables
+(define *statement-table* (make-hash))
+(define *label-table* (make-hash))
+(define *function-table* (make-hash))
+(define *variable-table* (make-hash))
+
+; Stderr
 (define *stderr* (current-error-port))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define *run-file*
     (let-values
@@ -30,13 +52,12 @@
     (exit 1)
 )
 
-;(usage-exit)
-;kills program and prints error message
 (define (usage-exit)
     (die `("Usage: " ,*run-file* " filename"))
 )
 
 ; foldr
+; description
 (define (foldr f u l)
     (if (null? l) u
         (f (car l) (foldr f u (cdr l)))))
@@ -47,24 +68,17 @@
     (define (c a d) (if (p? a) (cons a d) d))
     (foldr c '() l))
 
-;(readlist-from-inputfile)
-;Input : (string filename) name of file to be read
-;Output: list of strings containing individual
-;        lines in the input file
+; readlist-from-inputfile
+; Takes a filename and returns a list of the file's nonblank lines.
 (define (readlist-from-inputfile filename)
     (let ((inputfile (open-input-file filename)))
          (if (not (input-port? inputfile))
              (die `(,*run-file* ": " ,filename ": open failed"))
              (let ((program (read inputfile)))
                   (close-input-port inputfile)
-                         (filter (lambda (x) (not (null? (cdr x)))) program)))))
+                         (filter(lambda (x)
+                           (not (null? (cdr x)))) program)))))
 
-;(write-program-by-line filename program)
-;Input  : (string filename) and (list program) which is
-;         a list of strings containing individual lines
-;         in the input file
-;Effects: Prints each line in the file to stdout
-;Notes  : Used for debugging
 (define (write-program-by-line filename program)
     (printf "==================================================~n")
     (printf "~a: ~s~n" *run-file* filename)
@@ -72,30 +86,25 @@
     (printf "(~n")
     (map (lambda (line) (printf "~s~n" line)) program)
     (printf ")~n"))
-;
-; Symbol Table Initialization & Functions
-;
 
-;TODO: define build-statement-table, build-label-table
-;Create Tables
-(define *statement-table* (make-hash))
-(define *label-table* (make-hash))
-(define *function-table* (make-hash))
-(define *variable-table* (make-hash))
-
-;General Functions
-;
+; This may be unnecessary
 (define (symbol-get table key)
         (hash-ref table key))
+; This may be unnecessary
 (define (symbol-put! table key value)
         (hash-set! table key value))
 
+; It may be worth redefining this in terms of hash-set!
 (define (populate-table table pairs)
     (for-each (lambda (pair) (symbol-put! table (car pair) (cdr pair))) pairs))
 
+; This may be unnecessary
 (define (get-address line)
     (car line)
     )
+
+; get-statement
+; description
 (define (get-statement line)
     (if (null? (cdr line)) ; line --> (number)
         '()
@@ -107,6 +116,9 @@
             )
         )
     )
+
+; get-label
+; description
 (define (get-label line)
     (if (null? (cdr line)) ; line --> (number)
         '()
@@ -119,30 +131,37 @@
         )
     )
 
-;Statement Table
-
+; build-statement-table
+; description
 (define (build-statement-table program)
     (populate-table *statement-table*
         (map (lambda (line)
             (list (get-address line) (get-statement line)) ) program)))
 
-;Label Table
+; build-label-table
+; description
 (define (build-label-table program)
     (populate-table *label-table*
         (map (lambda (line)
             (list (get-label line) (get-address line)) ) program)))
 
-;Function Table
+; build-function-table
+; description
+; implementation
 
-;Variable Table
+; build-variable-table
+; description
+; implementation
 
-; Code for printing a hash table
+; This can probably be turned into a lambda inside print-hash-table
 (define (show label it)
     (display label)
     (display " = ")
     (display it)
     (newline)
 )
+
+; Combine this function with show
 (define (print-hash-table ht)
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
@@ -161,33 +180,35 @@
                   (else (cond ( (null? (cdr line)) '()) ; at end of list?
                         ( else (interpret (cdr line)))))))
             (else (cond ( (null? (cdr line)) '()) ; at end of list?
-                         ( else (interpret (cdr line))) )) )
-    )
-
+                         ( else (interpret (cdr line))) )) ) )
     (interpret line_list))
 
-;
-; F. Main
-;
-
-;(main arglist)
+; Main
 (define (main arglist)
     ; if the arglist is null or has more than one element
-    (if (or (null? arglist) (not (null? (cdr arglist)))) (usage-exit)
-        (let* ((sbprogfile (car arglist))
-               (program (readlist-from-inputfile sbprogfile)))
+    (if (or (null? arglist) (not (null? (cdr arglist))))
+        (usage-exit)
+        (let* ((inputfile (car arglist))
+               (program (readlist-from-inputfile inputfile)))
               (build-statement-table program)
               (build-label-table program)
               (interpreter program)
               )))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Execution Begins Here
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (main (vector->list (current-command-line-arguments)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Debug
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;(print-hash-table *statement-table*)
 ;(print-hash-table *label-table*)
-;
-;Error Checking Code
-;
 
 ;(display (get-address '(1) )) (display "\n")
 ;(display (get-address '(1 "label") )) (display "\n")
@@ -198,4 +219,3 @@
 ;(display (get-statement '(1 "label") )) (display "\n")
 ;(display (get-statement '(1 ("statement")) )) (display "\n")
 ;(display (get-statement '(1 "label" ("statement")) )) (display "\n")
-
