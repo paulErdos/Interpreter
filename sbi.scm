@@ -167,7 +167,7 @@
 ;        (display (cddar line))
         (cond ((and (symbol? (cadar line)) (not (null? (cddar line))))
             (printf "~a~n" (car (cdr (caddar line))) ))
-            (else (printf "~n")))
+            (else (printf "")))
  ;       (printf "~n")
         (cond ( (list? (cadar line)) 
             (cond ((string=? "print" (symbol->string (caadar line))) 
@@ -175,10 +175,9 @@
                    (cond ( (null? (cdr line)) '()) ; at end of list?
                          ( else (interpret (cdr line))) ))
                   (else (cond ( (null? (cdr line)) '()) ; at end of list?
-                        ( else (interpret (cdr line))) ))))
+                        ( else (interpret (cdr line)))))))
             (else (cond ( (null? (cdr line)) '()) ; at end of list?
-                         ( else (interpret (cdr line))) ) )
-        )
+                         ( else (interpret (cdr line))) )) )
     )
 
 ;        (cond ((string=? "print" (symbol->string (caadar line))) 
@@ -214,7 +213,7 @@
               (build-statement-table program) 
               (build-label-table program)
 ;              (display program)
-              (printf "~n")
+;              (printf "~n")
  ;             (display (cdr (car program)))
               (interpreter program)
               ))); 
