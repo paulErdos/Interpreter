@@ -36,7 +36,7 @@
     (die `("Usage: " ,*run-file* " filename"))
 )
 
-; foldr 
+; foldr
 (define (foldr f u l)
     (if (null? l) u
         (f (car l) (foldr f u (cdr l)))))
@@ -49,7 +49,7 @@
 
 ;(readlist-from-inputfile)
 ;Input : (string filename) name of file to be read
-;Output: list of strings containing individual 
+;Output: list of strings containing individual
 ;        lines in the input file
 (define (readlist-from-inputfile filename)
     (let ((inputfile (open-input-file filename)))
@@ -60,7 +60,7 @@
                          (filter (lambda (x) (not (null? (cdr x)))) program)))))
 
 ;(write-program-by-line filename program)
-;Input  : (string filename) and (list program) which is 
+;Input  : (string filename) and (list program) which is
 ;         a list of strings containing individual lines
 ;         in the input file
 ;Effects: Prints each line in the file to stdout
@@ -103,7 +103,7 @@
             (cadr line)
             (if (null? (cddr line)) ;line --> (number label)
                 '()
-                (caddr line)) ;line --> (line_num label (statement)) 
+                (caddr line)) ;line --> (line_num label (statement))
             )
         )
     )
@@ -114,22 +114,22 @@
             '()
             (if (null? (cadr line)) ;line --> (number label)
                 (cadr line)
-                (cadr line)) ;line --> (line_num label (statement)) 
+                (cadr line)) ;line --> (line_num label (statement))
             )
         )
     )
 
 ;Statement Table
 
-(define (build-statement-table program) 
-    (populate-table *statement-table* 
-        (map (lambda (line) 
+(define (build-statement-table program)
+    (populate-table *statement-table*
+        (map (lambda (line)
             (list (get-address line) (get-statement line)) ) program)))
 
 ;Label Table
-(define (build-label-table program) 
-    (populate-table *label-table* 
-        (map (lambda (line) 
+(define (build-label-table program)
+    (populate-table *label-table*
+        (map (lambda (line)
             (list (get-label line) (get-address line)) ) program)))
 
 ;Function Table
@@ -143,34 +143,18 @@
     (display it)
     (newline)
 )
-(define (print-hash-table ht) 
+(define (print-hash-table ht)
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
 ; Interpreter
 (define (interpreter line_list)
-;    (map (lambda (x) (printf "~a~n" x)) line_list)
-;				(printf "~n")
-;    (map (lambda (x) (printf "~a~n" (cdr x))) line_list)
-;				(printf "~n")
-;    (map (lambda (x) (printf "~a~n" (cadr x))) line_list)
-;				(printf "~n")
-;    (map (lambda (x) 
-;        (if (list? (cadr x)) (printf "~a~n" (cadr x)) 
-;            (printf "~n")))
-;        line_list)
-;				(printf "~n")
-
     (define (interpret line)
-;        (display (car line))
-;        (display (cadar line))
-;        (display (cddar line))
         (cond ((and (symbol? (cadar line)) (not (null? (cddar line))))
             (printf "~a~n" (car (cdr (caddar line))) ))
             (else (printf "")))
- ;       (printf "~n")
-        (cond ( (list? (cadar line)) 
-            (cond ((string=? "print" (symbol->string (caadar line))) 
+        (cond ( (list? (cadar line))
+            (cond ((string=? "print" (symbol->string (caadar line)))
                    (printf "~a~n" (car (cdadar line)))
                    (cond ( (null? (cdr line)) '()) ; at end of list?
                          ( else (interpret (cdr line))) ))
@@ -180,25 +164,7 @@
                          ( else (interpret (cdr line))) )) )
     )
 
-;        (cond ((string=? "print" (symbol->string (caadar line))) 
-;               (printf "~a~n" (car (cdadar line)))
-;               (cond ( (null? (cdr line)) '()) ; at end of list?
-;                     ( else (interpret (cdr line)))))
-;		      ( else 
-;				(display (car line))
-;				(display " | ")
-;				(display (cdar line))
-;				(display " | ")
-;				(display (cadar line))
-;				(display " | ")
-;				(display (symbol? (cadar line)))
-;				(display " | ")
-;				(display (caadar line))
-;				(display " | ")
-;				(printf "~n")
-;				(cond ( (null? (cdr line)) '()) ; at end of list?
-;				      ( else (interpret (cdr line)))) )))
-	(interpret line_list))
+    (interpret line_list))
 
 ;
 ; F. Main
@@ -207,16 +173,13 @@
 ;(main arglist)
 (define (main arglist)
     ; if the arglist is null or has more than one element
-    (if (or (null? arglist) (not (null? (cdr arglist)))) (usage-exit) ; check input
+    (if (or (null? arglist) (not (null? (cdr arglist)))) (usage-exit)
         (let* ((sbprogfile (car arglist))
                (program (readlist-from-inputfile sbprogfile)))
-              (build-statement-table program) 
+              (build-statement-table program)
               (build-label-table program)
-;              (display program)
-;              (printf "~n")
- ;             (display (cdr (car program)))
               (interpreter program)
-              ))); 
+              )))
 
 (main (vector->list (current-command-line-arguments)))
 

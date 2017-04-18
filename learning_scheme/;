@@ -4,7 +4,7 @@
 ; (if predicate then
 ;     else)
 (define (sign_if n)
-    (if (< n 0) -1
+    (if (< n 0) -1 
         (if (> n 0) +1
         0)))
 
@@ -17,10 +17,11 @@
 ;   (else then)) ; else here is literal string "else"
 ;
 ; the above if can be rewritten as
-(define (sign_cond n)
-    (cond ((< n 0) -1)
+(define (sign_cond n) 
+    (cond ((< n 0) -1)                                                 eouaoe
           ((> n 0) +1)
           (else 0)))
 
 (printf "~a~n" (sign_cond -200))
 (printf "~a~n" (sign_cond 200))
+
