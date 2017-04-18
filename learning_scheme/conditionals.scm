@@ -22,5 +22,8 @@
           ((> n 0) +1)
           (else 0)))
 
+; Does a cond need to have an else?
+(printf "~a~n" (cond ((< 0 1) 1)))
+
 (printf "~a~n" (sign_cond -200))
 (printf "~a~n" (sign_cond 200))

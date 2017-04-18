@@ -11,4 +11,5 @@ for i in $(ls sbir-files/done/*); do
 done
 
 # Restore alias
-source ~/.bashrc
+# But we don't need to do this because we're called bash on this script
+# source ~/.bashrc

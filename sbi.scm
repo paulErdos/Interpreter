@@ -166,21 +166,97 @@
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
+(define (interpret_statement statement)
+    (printf "~a~n" statement)
+)
+
 ; Interpreter
+; TO-DO
+; * Comment this
+; * Put the print conditions in one statement
+; * Put the combined print code in its own function, and call that
+;   function from here.
 (define (interpreter line_list)
     (define (interpret line)
-        (cond ((and (symbol? (cadar line)) (not (null? (cddar line))))
-            (printf "~a~n" (car (cdr (caddar line))) ))
-            (else (printf "")))
-        (cond ( (list? (cadar line))
+
+        ; The line is the whole list
+        ;(printf "line: ~a~n" line)
+        ; The car of the line is the line
+        ;(printf "car line:                ~a~n" (car line))
+        ; The cdr of the car of the line is the rest of the line after
+        ; the first element. This is a list.
+        ;(printf "cdar line:               ~a~n" (cdar line))
+        ; The car of the cdar is the line is the line's second element
+        ;(printf "cadar line:              ~a~n" (cadar line))
+        ; If this is a symbol, then it's a label
+        ;(printf "(symbol? (cadar line)):  ~a~n" (symbol? (cadar line)))
+        ; If there's a label, then the rest might either be
+        ; * a statement, or
+        ; * nothing
+        ;(printf "cddar line:              ~a~n" (cddar line))
+        ; So...
+        (cond
+            ; ((predicate)
+            ; if the line has a label and the rest of the line isn't null...
+            ((and (symbol? (cadar line)) (not (null? (cddar line))))
+            ;  (then))
+            ; pass (caddar line) on to interpret_statement
+            (interpret_statement (caddar line)))
+
+            ; and if it doesn't...
+            ; ( predicate
+            ( else
+            ;   (then))
+            ; pass (cadar line) on to interpret_statement
+            (interpret_statement (cadar line)) )
+        )
+
+
+            ; See if it's a print statement
+;            (printf "print command?:          ~a~n"
+;                (string=? "print" (symbol->string (car (caddar line)))))
+;            (cond
+;                ; ((predicate1)
+;                ((string=? "print" (symbol->string (car (caddar line)))) ; ((predicate)
+;                ; (then1))
+;                (printf "print command:           ~a~n" (car (caddar line)))
+;                (printf "rest of line:            ~a~n~n" (car (cdr (caddar line)))))
+;                ; ((predicate2)
+;                ((string=? "dim" (symbol->string (car (caddar line))))
+;                ;  (then2))
+;                 (printf "Array declared~n"))
+;
+;            ))
+;              (else
+;            (printf "Not a print statement.~n~n")))
+
+;        (cond
+;            ; Does this line have a label?
+;            ; Is the rest of the line not blank?
+;            ( (and (symbol? (cadar line)) (not (null? (cddar line)))) ; ( (predicate)
+;                (printf "~a~n" (car (cdr (caddar line)))) )           ;   (then) )
+;                (else (printf ""))
+;        ) ; cond
+
+        (cond
+            ; ((predicate1)
+            ((list? (cadar line))
+            ;  (then1))
             (cond ((string=? "print" (symbol->string (caadar line)))
                    (printf "~a~n" (car (cdadar line)))
                    (cond ( (null? (cdr line)) '()) ; at end of list?
                          ( else (interpret (cdr line))) ))
                   (else (cond ( (null? (cdr line)) '()) ; at end of list?
-                        ( else (interpret (cdr line)))))))
-            (else (cond ( (null? (cdr line)) '()) ; at end of list?
-                         ( else (interpret (cdr line))) )) ) )
+                        ( else (interpret (cdr line)))))) )
+            ; ( else
+            (else
+                (cond
+                    ((null? (cdr line)) '()) ; at end of list?
+                    (else (interpret (cdr line)))
+                )
+            )
+        )
+    )
     (interpret line_list))
 
 ; Main
