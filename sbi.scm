@@ -57,11 +57,7 @@
              (die `(,*run-file* ": " ,filename ": open failed"))
              (let ((program (read inputfile)))
                   (close-input-port inputfile)
-                         (map display (map (lambda (x) (not (null? (cdr x)))) program))
-                         (map display (filter (lambda (x) (not (null? (cdr x)))) program)) 
                          (filter (lambda (x) (not (null? (cdr x)))) program)))))
-                         
-;                         program))))
 
 ;(write-program-by-line filename program)
 ;Input  : (string filename) and (list program) which is 
@@ -153,24 +149,56 @@
 
 ; Interpreter
 (define (interpreter line_list)
-;	(print-hash-table *statement-table*)
-;	(print-hash-table *label-table*)
-	(define (interpret line)
-		(cond ( (null? (car line)) '())                     ; at end of list?
-		      ( (null? (cdar line)) (interpret (cdr line))) ; empty line?
-		      ( else 
-				(display (car line))
-				(display " | ")
-				(display (cdar line))
-				(display " | ")
-				(display (cadar line))
-				(display " | ")
-				(display (symbol? (cadar line)))
-				;(display (string=? "dim" (caadar line)))
-				(display " | ")
-				(printf "~n")
-				(cond ( (null? (cdr line)) '()) ; at end of list?
-				      ( else (interpret (cdr line)))) )))
+;    (map (lambda (x) (printf "~a~n" x)) line_list)
+;				(printf "~n")
+;    (map (lambda (x) (printf "~a~n" (cdr x))) line_list)
+;				(printf "~n")
+;    (map (lambda (x) (printf "~a~n" (cadr x))) line_list)
+;				(printf "~n")
+;    (map (lambda (x) 
+;        (if (list? (cadr x)) (printf "~a~n" (cadr x)) 
+;            (printf "~n")))
+;        line_list)
+;				(printf "~n")
+
+    (define (interpret line)
+;        (display (car line))
+;        (display (cadar line))
+;        (display (cddar line))
+        (cond ((and (symbol? (cadar line)) (not (null? (cddar line))))
+            (printf "~a~n" (car (cdr (caddar line))) ))
+            (else (printf "~n")))
+ ;       (printf "~n")
+        (cond ( (list? (cadar line)) 
+            (cond ((string=? "print" (symbol->string (caadar line))) 
+                   (printf "~a~n" (car (cdadar line)))
+                   (cond ( (null? (cdr line)) '()) ; at end of list?
+                         ( else (interpret (cdr line))) ))
+                  (else (cond ( (null? (cdr line)) '()) ; at end of list?
+                        ( else (interpret (cdr line))) ))))
+            (else (cond ( (null? (cdr line)) '()) ; at end of list?
+                         ( else (interpret (cdr line))) ) )
+        )
+    )
+
+;        (cond ((string=? "print" (symbol->string (caadar line))) 
+;               (printf "~a~n" (car (cdadar line)))
+;               (cond ( (null? (cdr line)) '()) ; at end of list?
+;                     ( else (interpret (cdr line)))))
+;		      ( else 
+;				(display (car line))
+;				(display " | ")
+;				(display (cdar line))
+;				(display " | ")
+;				(display (cadar line))
+;				(display " | ")
+;				(display (symbol? (cadar line)))
+;				(display " | ")
+;				(display (caadar line))
+;				(display " | ")
+;				(printf "~n")
+;				(cond ( (null? (cdr line)) '()) ; at end of list?
+;				      ( else (interpret (cdr line)))) )))
 	(interpret line_list))
 
 ;
@@ -193,8 +221,8 @@
 
 (main (vector->list (current-command-line-arguments)))
 
-(print-hash-table *statement-table*)
-(print-hash-table *label-table*)
+;(print-hash-table *statement-table*)
+;(print-hash-table *label-table*)
 ;
 ;Error Checking Code
 ;
