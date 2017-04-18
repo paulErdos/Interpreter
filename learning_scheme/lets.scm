@@ -13,6 +13,11 @@
 ; is the same as this
 ((lambda(a b) (cons a b)) '(1 2 3) '(4 5 6))
 
+; and this
+(printf "~a~n" (let ((x 2) (y 3)) (+ x y)))
+; is the same as this
+(printf "~a~n" ((lambda (x y) (+ x y)) 2 3))
+
 ; practicing from main program
 ;(define tiny_list '(1))
 ;(let* ((name (car tiny_list))

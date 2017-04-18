@@ -1,0 +1,76 @@
+#pseudocode
+
+# Suppose statement here is an array of things mentioned in the assgt doc
+# and forget the leading and trailing parens
+
+; vectors are used to implement arrays
+switch(statement[0]):
+	case 'dim': 	; statement -> '(' 'dim' '(' Variable Expression ')' ')'
+		; add to symbol table key = Variable, value = a vector of length Expression
+		(define ((symbol_table[1])[0]) (make-vector ((statement[1])[1])))
+
+	case 'let':
+		; 1. Evaluate the expression
+		symbol_table(key) = evaluate(statement[2])
+		
+			; 2. 
+	case 'goto':
+		
+	case 'if':
+		
+	case 'print':
+		
+	case 'input':
+		
+From Mackey:
+the interpreter function accepts a lineptr argument, the car of which is the line.
+then extract the statement, if any, and look up the keyword in a hash table,
+which returns an interpreter function.
+pass the lintptr argument to the individual statement interpreter.
+after interpreting the statement, if it is not a goto, then call interpreter with cdr lineptr
+else look up the address in the label table and call the interpreter with that.
+
+def interpreter(lineptr):
+	if len(line) == 3:
+		statement = line[2]
+
+	keyword = statement[0]
+	the_interpreter_function_we_need = interpreter_functions(key = keyword)
+
+	; interpret the statement
+	the_interpreter_fn_we_need(statement)
+	
+	if(keyword != "goto"):
+		interpreter(cdr lineptr)
+	else:
+		label = statement[1]
+		interpreter(label_table(key = label))
+
+
+def interpret_dim(statement):
+	; add to symbol table key = Variable, value = a vector of length Expression
+	(define ((symbol_table[1])[0]) (make-vector ((statement[1])[1])))
+
+def interpret_let:
+	; 1. Evaluate the expression
+	symbol_table(key) = evaluate(statement[2])
+
+	; 2. Figure out whether or not we're dealing with a variable, e.g.,
+	;    (    5          (let i 6))       // let i = 6
+	;    (    7          (dim (a 10)))    // array declared
+	;    (    8          (let (a i) 9))   // let a(1) = 9
+	;    Or an arra
+
+
+def interpret_goto:
+
+def interpret_if:
+
+def interpret_print:
+
+def interpret_input:
+
+
+; For evaluating expressions, check out:
+; 1. the evalexpr function in hashexample.scm
+; 2. The piazza question 'getting variables from statement'

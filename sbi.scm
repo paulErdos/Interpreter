@@ -111,13 +111,15 @@
 ;Statement Table
 
 (define (build-statement-table program) 
-    (populate-table *statement-table* (map (lambda (line) (list (get-address line) (get-statement line)) ) program)
-    ))
+    (populate-table *statement-table* 
+        (map (lambda (line) 
+            (list (get-address line) (get-statement line)) ) program)))
 
 ;Label Table
 (define (build-label-table program) 
-    (populate-table *label-table* (map (lambda (line) (list (get-label line) (get-address line)) ) program)
-    ))
+    (populate-table *label-table* 
+        (map (lambda (line) 
+            (list (get-label line) (get-address line)) ) program)))
 
 ;Function Table
 
@@ -144,10 +146,10 @@
     (if (or (null? arglist) (not (null? (cdr arglist)))) ;check for correct input
         (usage-exit)
         (let* ((sbprogfile (car arglist))
-               (program (readlist-from-inputfile sbprogfile))) ;puts list of statements into var program
-              (build-statement-table program) ;;(build-label-table program)
-              (build-label-table program) ;;(build-label-table program)
-              ))); initializes statement symbol table
+               (program (readlist-from-inputfile sbprogfile))
+              (build-statement-table program) 
+              (build-label-table program)
+              ))); 
 
 (main (vector->list (current-command-line-arguments)))
 
