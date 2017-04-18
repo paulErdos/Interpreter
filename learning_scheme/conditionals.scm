@@ -4,14 +4,9 @@
 ; (if predicate then
 ;     else)
 (define (sign_if n)
-	(if (< n 0) 
-	    -1 
-	    (if (> n 0) 
-		+1
-		0
-	    )
-	)
-)
+	(if (< n 0) -1 
+	    (if (> n 0) +1
+		0)))
 
 (printf "~a~n" (sign_if -200))
 (printf "~a~n" (sign_if 200))

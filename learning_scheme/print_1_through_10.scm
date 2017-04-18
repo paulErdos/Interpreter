@@ -8,7 +8,7 @@
         (if (null? l..) n ; if l.. is null, return n
             ; else, call len.. with cdr of l.. and add one to n
             (len.. (cdr l..) (+ n 1)))))
-	    (len.. l 0)))
+    (len.. l 0)))
 		
 ; accumulate from 1 to n, and print out each number
 (define count (lambda (n) 

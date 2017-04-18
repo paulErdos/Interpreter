@@ -136,6 +136,17 @@
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
+; Interpreter
+(define (interpreter line_list)
+;	(print-hash-table *statement-table*)
+;	(print-hash-table *label-table*)
+	(define (interpret line)
+		(display (car line))
+		(printf "~n")
+		(cond ( (null? (cdr line)) '())
+		      ( else (interpret (cdr line)))))
+	(interpret line_list))
+
 ;
 ; F. Main
 ;
@@ -143,18 +154,21 @@
 ;(main arglist)
 (define (main arglist)
     ; if the arglist is null or has more than one element
-    (if (or (null? arglist) (not (null? (cdr arglist)))) ;check for correct input
-        (usage-exit)
+    (if (or (null? arglist) (not (null? (cdr arglist)))) (usage-exit) ; check input
         (let* ((sbprogfile (car arglist))
-               (program (readlist-from-inputfile sbprogfile))
+               (program (readlist-from-inputfile sbprogfile)))
               (build-statement-table program) 
               (build-label-table program)
+;              (display program)
+              (printf "~n")
+ ;             (display (cdr (car program)))
+              (interpreter program)
               ))); 
 
 (main (vector->list (current-command-line-arguments)))
 
-(print-hash-table *statement-table*)
-(print-hash-table *label-table*)
+;(print-hash-table *statement-table*)
+;(print-hash-table *label-table*)
 ;
 ;Error Checking Code
 ;
