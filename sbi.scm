@@ -29,7 +29,7 @@
 ; Tables
 (define *statement-table* (make-hash))
 (define *label-table* (make-hash))
-(define *function-table* (make-hash))
+;(define *function-table* (make-hash))
 (define *variable-table* (make-hash))
 
 ; Stderr
@@ -88,12 +88,11 @@
     (map (lambda (line) (printf "~s~n" line)) program)
     (printf ")~n"))
 
-; This may be unnecessary
-(define (symbol-get table key)
-        (hash-ref table key))
-; This may be unnecessary
-(define (symbol-put! table key value)
-        (hash-set! table key value))
+;(define (symbol-get table key)
+;        (hash-ref table key))
+;
+;(define (symbol-put! table key value)
+;        (hash-set! table key value))
 
 ; It may be worth redefining this in terms of hash-set!
 (define (populate-table table pairs)
@@ -167,15 +166,85 @@
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
+; Function table
+; Initialized when the program begins, using a for-each loop
+; containing a lambda.
+; See:
+; * hashexample.scm, lines 21, 65
+; * symbols.scm
+(define *function-table* (make-hash))
+
+(define (symbol-get table key)
+        (hash-ref table key))
+
+(define (symbol-put! table key value)
+        (hash-set! table key value))
+
+(for-each
+    (lambda (pair)
+            (hash-set! *function-table* (car pair) (cadr pair)))
+    `(
+
+        (+ ,(lambda (x y) (+ x y)))
+        (- ,-);(lambda (x y) (- x y)))
+        (* ,*)
+        (/ ,(lambda (x y)
+                    (cond ((= 0 y)
+                           (cond ((> x 0) "+inf.0")
+                                 ((< x 0) "-inf.0")
+                                 (else    "+nan.0")))
+                          (else (/ x (+ y 0.0))) ) ))
+
+        (log10_2 0.301029995663981195213738894724493026768189881)
+        (sqrt_2  1.414213562373095048801688724209698078569671875)
+        (e       2.718281828459045235360287471352662497757247093)
+        (pi      3.141592653589793238462643383279502884197169399)
+        (div     ,(lambda (x y) (floor (/ x y))))
+        (log10   ,(lambda (x)
+                    (cond ((= x 0) "+nan.0")
+                          (else (/ (log x) (log 10.0)))) ))
+
+        (mod     ,(lambda (x y) (- x (* (div x y) y))))
+        (quot    ,(lambda (x y) (truncate (/ x y))))
+        (rem     ,(lambda (x y) (- x (* (quot x y) y))))
+        (+       ,+)
+        (^       ,expt)
+        (ceil    ,ceiling)
+        (exp     ,exp)
+        (floor   ,floor)
+        (log     ,(lambda (x)
+                    (cond ((= x 0) "+nan.0")
+                          (else (log x)) ) ))
+
+        (sqrt    ,sqrt)
+
+     ))
+
 ; Expression evaluator
-(define (evaluate-expression expression)
-    (printf "~n~a" expression)
+(define (evaluate-expression expr)
+   (cond ((number? expr)
+;          (printf "number:     ~a~n" expr)
+            expr)
+         ((symbol? expr)
+;          (printf "symbol:     ~a~n" expr)
+            (hash-ref *function-table* expr #f))
+         ((pair? expr)
+;          (printf "pair:       ~a~n" expr)
+;          (printf "car expr:   ~a~n" (car expr))
+;          (printf "cdr expr:   ~a~n" (cdr expr))
+            (apply (hash-ref *function-table* (car expr)) (map evaluate-expression (cdr expr))))
+         (else #f))
+)
+
+; Expression evaluator
+;(define (evaluate-expression expression)
+;    (printf "~n~a" expression)
 ;    (cond ((list? expression) (map (lambda (x) (printf "~a" x)) expression))
 ;          (else (printf "~a" expression))
 ;    )
-    (string-append
-        "; Hello from evaluate-expression!")
-)
+;    (string-append
+;        "; Hello from evaluate-expression!")
+;)
 
 ; Functions for dealing with each type of statement
 (define (statement-dim arguments)
@@ -227,8 +296,6 @@
             )
         )
     )
-
-    (printf "~n")
 )
 
 (define (statement-input arguments)
