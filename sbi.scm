@@ -167,6 +167,16 @@
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
+; Expression evaluator
+(define (evaluate-expression expression)
+    (printf "~n~a" expression)
+;    (cond ((list? expression) (map (lambda (x) (printf "~a" x)) expression))
+;          (else (printf "~a" expression))
+;    )
+    (string-append
+        "; Hello from evaluate-expression!")
+)
+
 ; Functions for dealing with each type of statement
 (define (statement-dim arguments)
     (printf "Hello from dim!~n")
@@ -188,9 +198,37 @@
     (printf "~a~n" arguments)
 )
 
+; Test esp. with 22-fibonacci
 (define (statement-print arguments)
-    (printf "Hello from print!~n")
-    (printf "~a~n" arguments)
+;    (printf "~nprint: ~n")
+;    (printf "* arguments                 = ~a.~n" arguments)
+;    (printf "* (null? arguments)         = ~a.~n" (null? arguments))
+
+    (cond
+        ((null? arguments) (printf "~n"))
+        (else
+;            (printf "* (car arguments)           = ~a.~n" (car arguments))
+;            (printf "* (string? (car arguments)) = ~a.~n" (string? (car arguments)))
+            (cond
+                ; If we're printing a string
+                ((string? (car arguments))
+                    ; print the string.
+                    (printf (car arguments))
+                    ; then print the rest
+                    (statement-print (cdr arguments))
+                )
+                ; If we are instead printing an expression
+                (else
+                    ; print the expression
+                    (printf "~a~n" (evaluate-expression (car arguments)))
+                    ; then print the rest
+                    (statement-print (cdr arguments))
+                )
+            )
+        )
+    )
+
+    (printf "~n")
 )
 
 (define (statement-input arguments)
