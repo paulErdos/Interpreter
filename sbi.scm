@@ -18,6 +18,7 @@
 ;;    * Reorganize functions
 ;;    * Describe and comment everything I've written
 ;;    * Put my name in this
+;;    * Simplify the predicates in the first cond of interpret
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -166,8 +167,57 @@
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
+; Functions for dealing with each type of statement
+(define (statement-dim arguments)
+    (printf "Hello from dim!~n")
+    (printf "~a~n" arguments)
+)
+
+(define (statement-let arguments)
+    (printf "Hello from let!~n")
+    (printf "~a~n" arguments)
+)
+
+(define (statement-goto arguments)
+    (printf "Hello from goto!~n")
+    (printf "~a~n" arguments)
+)
+
+(define (statement-if arguments)
+    (printf "hello from if!~n")
+    (printf "~a~n" arguments)
+)
+
+(define (statement-print arguments)
+    (printf "Hello from print!~n")
+    (printf "~a~n" arguments)
+)
+
+(define (statement-input arguments)
+    (printf "Hello from input!~n")
+    (printf "~a~n" arguments)
+)
+
 (define (interpret-statement statement)
-    (printf "interpret-statement: ~a~n" statement)
+    (cond
+        ((string=? "dim" (symbol->string (car statement)))
+            (statement-dim (cdr statement)))
+
+        ((string=? "let" (symbol->string (car statement)))
+            (statement-let (cdr statement)))
+
+        ((string=? "goto" (symbol->string (car statement)))
+            (statement-goto (cdr statement)))
+
+        ((string=? "if" (symbol->string (car statement)))
+            (statement-if (cdr statement)))
+
+        ((string=? "print" (symbol->string (car statement)))
+            (statement-print (cdr statement)))
+
+        ((string=? "input" (symbol->string (car statement)))
+            (statement-input (cdr statement)))
+    )
 )
 
 ; Interpreter
@@ -203,6 +253,13 @@
             ; pass (caddar line) on to interpret-statement
             (interpret-statement (caddar line)))
 
+            ; ((predicate)
+            ; if the line has a label, but the rest is null...
+            ((and (symbol? (cadar line)) (null? (cddar line)))
+            ; (then))
+            ; do nothing
+            (printf ""))
+
             ; and if it doesn't have a label...
             ; ( predicate
             ( else
@@ -212,7 +269,8 @@
         )
 
         (cond ((null? (cdr line)) '())          ; at end of list?
-              (else (interpret (cdr line))) )
+              (else (interpret (cdr line)))
+        )
 
             ; See if it's a print statement
 ;            (printf "print command?:          ~a~n"
