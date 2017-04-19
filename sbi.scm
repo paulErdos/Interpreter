@@ -166,8 +166,8 @@
     (hash-for-each ht (lambda (key value) (show key value)))
     (newline))
 
-(define (interpret_statement statement)
-    (printf "~a~n" statement)
+(define (interpret-statement statement)
+    (printf "interpret-statement: ~a~n" statement)
 )
 
 ; Interpreter
@@ -200,17 +200,19 @@
             ; if the line has a label and the rest of the line isn't null...
             ((and (symbol? (cadar line)) (not (null? (cddar line))))
             ;  (then))
-            ; pass (caddar line) on to interpret_statement
-            (interpret_statement (caddar line)))
+            ; pass (caddar line) on to interpret-statement
+            (interpret-statement (caddar line)))
 
-            ; and if it doesn't...
+            ; and if it doesn't have a label...
             ; ( predicate
             ( else
             ;   (then))
-            ; pass (cadar line) on to interpret_statement
-            (interpret_statement (cadar line)) )
+            ; pass (cadar line) on to interpret-statement
+            (interpret-statement (cadar line)) )
         )
 
+        (cond ((null? (cdr line)) '())          ; at end of list?
+              (else (interpret (cdr line))) )
 
             ; See if it's a print statement
 ;            (printf "print command?:          ~a~n"
@@ -238,24 +240,30 @@
 ;                (else (printf ""))
 ;        ) ; cond
 
-        (cond
-            ; ((predicate1)
-            ((list? (cadar line))
-            ;  (then1))
-            (cond ((string=? "print" (symbol->string (caadar line)))
-                   (printf "~a~n" (car (cdadar line)))
-                   (cond ( (null? (cdr line)) '()) ; at end of list?
-                         ( else (interpret (cdr line))) ))
-                  (else (cond ( (null? (cdr line)) '()) ; at end of list?
-                        ( else (interpret (cdr line)))))) )
-            ; ( else
-            (else
-                (cond
-                    ((null? (cdr line)) '()) ; at end of list?
-                    (else (interpret (cdr line)))
-                )
-            )
-        )
+;        (cond
+;            ; ((predicate1)
+;            ((list? (cadar line))
+;            ;  (then1))
+;            ;(printf "Predicate 1 is true~n")
+;            (cond
+;                ; ((predicate1a)
+;                ((string=? "print" (symbol->string (caadar line)))
+;                ;  (then))
+;                   (printf "FOO: ~a~n" (car (cdadar line)))
+;                   (cond ( (null? (cdr line)) '()) ; at end of list?
+;                         ( else (interpret (cdr line))) ))
+;                ; (else
+;                  (else (printf "Predicate 1a is false~n")
+;                        (cond ((null? (cdr line)) '()) ; at end of list?
+;                              (else (interpret (cdr line))) ))
+;            ))
+;
+;            ; ( else (then))
+;            (else (printf "Predicate 1 is false~n")
+;                  (cond ((null? (cdr line)) '())          ; at end of list?
+;                        (else (interpret (cdr line))) )
+;            )
+;        )
     )
     (interpret line_list))
 
