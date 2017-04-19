@@ -228,8 +228,8 @@
    (cond ((number? expr)
 ;          (printf "number:     ~a~n" expr)
             expr)
-         ((null? (hash-ref *variable-table* expr #f))
-          (hash-ref *variable-table* expr))
+;         ((null? (hash-ref *variable-table* expr #f))
+;          (hash-ref *variable-table* expr))
          ((symbol? expr)
 ;          (printf "symbol:     ~a~n" expr)
           ; It's either a function
@@ -241,9 +241,17 @@
 ;            (hash-ref *function-table* expr #f))
          ((pair? expr)
 ;          (printf "pair:       ~a~n" expr)
-;          (printf "car expr:   ~a~n" (car expr))
-;          (printf "cdr expr:   ~a~n" (cdr expr))
-            (apply (hash-ref *function-table* (car expr)) (map evaluate-expression (cdr expr))))
+ ;         (printf "car expr:   ~a~n" (car expr))
+  ;        (printf "cadr expr:   ~a~n" (cadr expr))
+          ; it's either a function or a variable
+          (cond ((hash-ref *function-table* (car expr) #f)
+                 (apply (hash-ref *function-table* (car expr))
+                        (map evaluate-expression (cdr expr)) ))
+                ((hash-ref *variable-table* (car expr) #f)
+                 (vector-ref 
+                    (hash-ref *variable-table* (car expr)) 
+                    (evaluate-expression (cadr expr)) ) )) )
+        
          (else #f))
 )
 
