@@ -1,6 +1,6 @@
 #!/afs/cats.ucsc.edu/courses/cmps112-wm/usr/racket/bin/mzscheme -qr
 
-; declare an empty vector of size 10
+; declare an empty vector of size 5
 ; vectors are initialized to zero
 (define x1 (make-vector 5))
 (printf "x1: ~a~n" x1)

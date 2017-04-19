@@ -231,14 +231,14 @@
          ((null? (hash-ref *variable-table* expr #f))
           (hash-ref *variable-table* expr))
          ((symbol? expr)
-;          (printf "symbol:     ~a~n" expr)
+          (printf "symbol:     ~a~n" expr)
           ; It's either a function
           (cond ((hash-ref *function-table* expr #f)
                  (hash-ref *function-table* expr #f))
                 ((hash-ref *variable-table* expr #f)
-                 (hash-ref *variable-table* expr #f))))
-;          (print "~a~n" (hash-ref *function-table* expr #f))
-;            (hash-ref *function-table* expr #f))
+                 (hash-ref *variable-table* expr #f)))
+          (print "~a~n" (hash-ref *function-table* expr #f))
+            (hash-ref *function-table* expr #f))
          ((pair? expr)
 ;          (printf "pair:       ~a~n" expr)
 ;          (printf "car expr:   ~a~n" (car expr))
@@ -260,9 +260,9 @@
 
 ; Functions for dealing with each type of statement
 (define (statement-dim arguments)
-;    (printf "Hello from dim!~n")
+    (printf "Hello from dim!~n")
 ;    (printf "~a~n" arguments)
-;    (printf "~a~n" (car arguments))
+    (printf "~a~n" (car arguments))
 ;    (printf "~a~n" (caar arguments))
 ;    (printf "~a~n" (cdar arguments))
 ;    (printf "~a~n" (evaluate-expression (cadar arguments)))
@@ -292,10 +292,10 @@
          ;(printf "caar: ~a~n" (caar arguments))   
         )
         (else 
-;            (printf "else~n")
- ;           (printf "~a~n" (car arguments))
-  ;          (printf "~a~n" (cadr arguments))
-   ;         (printf "~a~n" (evaluate-expression (cadr arguments)))
+            (printf "else~n")
+            (printf "~a~n" (car arguments))
+            (printf "~a~n" (cadr arguments))
+            (printf "~a~n" (evaluate-expression (cadr arguments)))
             (hash-set! 
                 *variable-table* 
                 (car arguments) 
